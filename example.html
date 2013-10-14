@@ -1,0 +1,200 @@
+<html>
+
+<head>
+
+	<title>Bounce - Canvas game loop skeleton</title>
+
+	<style>
+		.nav { 	position: absolute;
+				top: 20px;
+				left:  20px;
+			}
+		
+	</style>
+
+	<script language="javascript">	
+
+  // Some initial variables
+	var total = 500; // Total balls
+	var i	= 0;
+	var balls 	= new Array(); // array for all our circle objects
+	var height 	= window.innerHeight * 1;
+	var width 	= window.innerWidth * 1;
+	var hmin	= window.innerHeight * 0;
+	var wmin 	= window.innerWidth	* 0;
+	var rlimit	= 20; // max ball size
+	var colors	= new Array();
+	
+  // Array of decent looking color values
+	colors[0] = "F00";
+	colors[1] = "0F0";
+	colors[2] = "00F";
+	colors[3] = "F0F";
+	colors[4] = "FF0";
+	colors[5] = "0FF";
+	colors[6] = "F08";
+	colors[7] = "F80";
+	colors[8] = "F88";
+	colors[9] = "08F";
+	colors[10] = "88F";
+	colors[12] = "0F8";
+	colors[13] = "8F8";
+	colors[14] = "8F0";
+	colors[15] = "FF8";
+	colors[16] = "F8F";
+	colors[17] = "8FF";
+	colors[18] = "289";
+	colors[19] = "982";
+	colors[20] = "829";
+	colors[21] = "229";
+	colors[22] = "DDD";
+	colors[23] = "333";
+
+  // Generates a bunch of new circle objects for our ball array	
+	while (i < total) {
+		balls[i] = new 	Circle( Math.ceil( Math.random()*(width) ), Math.ceil(Math.random()*height), (Math.ceil(Math.random()*rlimit) + 1));
+		i++;	
+	}
+
+  // Resets our canvas height when we load the page or in case we resize	
+	function init() {
+	  canvas = document.getElementById("map");
+	  canvas.height = height;
+	  canvas.width = width;
+  }
+
+  // Initializes the canvas and starts the game loop
+	function start()	{
+	
+		// Get the canvas element we need
+		drawing_canvas = document.getElementById('map');
+
+		// Initaliase a global 2-dimensional drawing context
+		context = drawing_canvas.getContext('2d');
+
+		// this starts the game loop
+		setInterval( drawMap, 10);
+	}
+
+  // Clears the canvas linked to the global context	
+	function clearCanvas() {
+		context.fillStyle = "#fff";
+		context.fillRect(0, 0, width, height);
+	}
+  // This is our main game loop	
+	function drawMap() {
+
+    // Erases everything on the canvas
+		clearCanvas();
+
+    // Loop through all circle objects
+		for (i=0; i<total; i++) {		
+			 
+      // The circle objects know how to update their position and draw themselves on the canvas
+			balls[i].move();
+			balls[i].draw();
+		}	
+	}
+
+	// Circle Class
+  // Accepts x and y coordinates and a radius	
+	function Circle(x,y,r) {
+		this.x = x;
+		this.y = y;
+		this.r = r;
+		this.dx = Math.ceil(Math.random()*(12-r)) - Math.ceil(Math.random()*(12-r));
+		this.dy = Math.ceil(Math.random()*(12-r)) - Math.ceil(Math.random()*(12-r));
+		this.color = Math.ceil(Math.random()*colors.length);
+
+    // If we have a direction of zero, give it something
+    this.dx = this.dx == 0 ? 1 : this.dx;
+    this.dy = this.dy == 0 ? 1 : this.dy;
+	
+    // Each circle object knows how to draw itself	
+		this.draw = function() {
+			context.beginPath();
+			context.fillStyle = "#" + colors[this.color];
+			context.arc(this.x, this.y, this.r, 0, Math.PI*2, true);
+			context.closePath();
+			context.fill();
+		}
+
+    // If we want to change directions horizontally
+		this.bounceX = function() {
+			this.dx = this.dx*-1;
+		}
+		
+		this.bounceY = function() {
+			this.dy = this.dy*-1;
+		}
+		
+		this.getX = function() {
+			return this.x;
+		}
+		
+		this.getY = function() {
+			return this.y;
+		}
+
+		this.getdX = function() {
+			return this.dx;
+		}
+		
+		this.getdY = function() {
+			return this.dy;
+		}
+
+		this.setdX = function(dx) {
+			this.dx = dx;
+		}
+		
+		this.setdY = function(dy) {
+			this.dy = dy;
+		}
+
+		this.getR = function() {
+			return this.r;
+		}
+	
+    // Moves the object by applying it's velocity to the current position	
+		this.move = function() {	
+			this.x += this.dx;
+			this.y += this.dy;
+
+			if(this.x >= width ) {
+				this.dx = this.dx*-1;
+				this.x = width;
+			}
+			
+			if(this.x <= wmin) {
+				this.dx = this.dx*-1;
+				this.x = wmin;
+			}
+
+			if(this.y >= height) {
+				this.dy = this.dy*-1;
+				this.y = height;
+			}
+			
+			if(this.y <= hmin) {
+				this.dy = this.dy*-1;
+				this.y = hmin;
+			}
+		}
+	}
+
+
+
+	</script>
+	
+</head>
+<body onLoad="javascript:init()">
+	
+	<div class="nav">
+	<div id="gravity"></div><div id="timer"></div>
+	<input type="button" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
+	</div>
+	<canvas id=map height=600 width=800>This is where the canvas would be if your browser supported it.</canvas>
+
+</body>
+</html>
