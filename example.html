@@ -5,21 +5,35 @@
   <title>Bounce - Canvas game loop skeleton</title>
 
   <style>
+    body {
+     background-color: #000000;
+    }
     .nav {  position: absolute;
         top: 20px;
         left:  20px;
       }
+    .moveRight {
+      position: absolute; 
+      top: 20px;
+      left: 40px;
+    }
     
   </style>
 
   <script language="javascript">  
 
+
+
   // Some initial variables
   var total = 500; // Total balls
   var i = 0;
   var balls   = new Array(); // array for all our circle objects
-  var height  = window.innerHeight * 1;
-  var width   = window.innerWidth * 1;
+
+  var viewport = new Viewport();
+  var world = new World();
+
+  var height  = world.height;
+  var width   = world.width;
   var hmin  = window.innerHeight * 0;
   var wmin  = window.innerWidth * 0;
   var rlimit  = 20; // max ball size
@@ -50,6 +64,22 @@
   colors[22] = "DDD";
   colors[23] = "333";
 
+  document.addEventListener('keydown', function(event) {
+      if(event.keyCode == 37) {
+        viewport.x -= 20;
+      }
+      else if(event.keyCode == 39) {
+        viewport.x += 20;
+      }
+      else if(event.keyCode == 38) {
+        viewport.y -= 20;
+      }
+      else if(event.keyCode == 40) {   
+        viewport.y += 20;
+      }    
+      console.log(viewport);  
+  });
+
   // Generates a bunch of new circle objects for our ball array 
   while (i < total) {
     balls[i] = new  Circle( Math.ceil( Math.random()*(width) ), Math.ceil(Math.random()*height), (Math.ceil(Math.random()*rlimit) + 1));
@@ -59,8 +89,12 @@
   // Resets our canvas height when we load the page or in case we resize  
   function init() {
     canvas = document.getElementById("map");
-    canvas.height = height;
-    canvas.width = width;
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+  }
+
+  function moveViewport(move) {
+    viewport.x += move;
   }
 
   // Initializes the canvas and starts the game loop
@@ -96,14 +130,31 @@
     } 
   }
 
+  // World class
+  function World() {
+    this.x = 0;
+    this.y = 0;
+    this.width = 10000;
+    this.height = 10000;
+    this.entities = new Array();
+  }
+
+  // Viewport Class 
+  function Viewport() {
+    this.x = 0;
+    this.y = 0;
+    this.width = 500;
+    this.height = 500;
+  }
+
   // Circle Class
   // Accepts x and y coordinates and a radius 
   function Circle(x,y,r) {
     this.x = x;
     this.y = y;
     this.r = r;
-    this.dx = Math.ceil(Math.random()*(12-r)) - Math.ceil(Math.random()*(12-r));
-    this.dy = Math.ceil(Math.random()*(12-r)) - Math.ceil(Math.random()*(12-r));
+    this.dx = Math.ceil(Math.random()*(5-r)) - Math.ceil(Math.random()*(5-r));
+    this.dy = Math.ceil(Math.random()*(5-r)) - Math.ceil(Math.random()*(5-r));
     this.color = Math.ceil(Math.random()*colors.length);
 
     // If we have a direction of zero, give it something
@@ -114,7 +165,7 @@
     this.draw = function() {
       context.beginPath();
       context.fillStyle = "#" + colors[this.color];
-      context.arc(this.x, this.y, this.r, 0, Math.PI*2, true);
+      context.arc(this.x - viewport.x, this.y - viewport.y, this.r, 0, Math.PI*2, true);
       context.closePath();
       context.fill();
     }
@@ -193,6 +244,7 @@
   <div class="nav">
   <div id="gravity"></div><div id="timer"></div>
   <input type="button" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
+  <input type="button" value="Move Right" id=moveRight name=moveRight onClick="javascript:moveViewport(50);">
   </div>
   <canvas id=map height=600 width=800>This is where the canvas would be if your browser supported it.</canvas>
 
