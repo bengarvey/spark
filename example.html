@@ -22,6 +22,7 @@
   var colors  = new Array();
   var speed = 20;
   var name = "";
+  var interval;
 
   // Array of decent looking color values
   colors[0] = "F00";
@@ -111,10 +112,12 @@
     context = drawing_canvas.getContext('2d');
 
     // this starts the game loop
-    setInterval( drawMap, 10);
+    interval = setInterval( drawMap, 10);
   }
 
   function end()  {
+    clearInterval(interval);
+
     var endName = document.getElementById('endName');
     endName.innerHTML = name;
 
