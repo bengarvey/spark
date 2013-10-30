@@ -1,21 +1,6 @@
 <html>
 <head>
   <title>Bounce - Canvas game loop skeleton</title>
-  <style>
-    body {
-     background-color: #000000;
-    }
-    .nav {  position: absolute;
-        top: 20px;
-        left:  20px;
-      }
-    .moveRight {
-      position: absolute; 
-      top: 20px;
-      left: 40px;
-    }
-    
-  </style>
 
   <script language="javascript">  
 
@@ -37,6 +22,7 @@
   var rlimit  = 20; // max ball size
   var colors  = new Array();
   var speed = 20;
+  var name = "";
 
   // Array of decent looking color values
   colors[0] = "F00";
@@ -103,7 +89,18 @@
 
   // Initializes the canvas and starts the game loop
   function start()  {
-  
+    name = document.getElementById('nameInputBox').value;
+
+    var startBox = document.getElementById('start');
+    startBox.style.display = "none";
+
+    var end = document.getElementById('end');
+    end.style.display = "none";
+
+    var map = document.getElementById('map');
+    map.style.display = "block";
+
+
     // Get the canvas element we need
     drawing_canvas = document.getElementById('map');
 
@@ -112,6 +109,18 @@
 
     // this starts the game loop
     setInterval( drawMap, 10);
+  }
+
+  function end()  {
+    var endName = document.getElementById('endName');
+    endName.innerHTML = name;
+
+    var end = document.getElementById('end');
+    end.style.display = "block";
+
+    var map = document.getElementById('map');
+    map.style.display = "none";
+
   }
 
   // Clears the canvas linked to the global context 
@@ -280,14 +289,48 @@
 
 
   </script>
+  <link href="css/bootstrap.min.css" rel="stylesheet" />   
+  <style>
+    body {
+     background-color: #074CE0;
+     color: white;
+    }
+    .nav {
+      padding: 10px 0px;
+    }
+    #start {
+      background: url('img/stickman.png') no-repeat;
+      background-size: 100px;
+      padding-left: 150px;
+      height: 200px;
+      position: absolute;      
+      left: 35%;
+      top: 35%;  
+    }
+    #end {
+      position: absolute;
+      left: 35%;
+      top: 35%; 
+      height: 200px;
+      padding-left: 150px;
+      display: none;
+    }
+  </style> 
   
 </head>
 <body onLoad="javascript:init()">
-  
-  <div class="nav">
-  <div id="gravity"></div><div id="timer"></div>
-  <input type="button" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
-  <input type="button" value="Move Right" id=moveRight name=moveRight onClick="javascript:moveViewport(50);">
+  <div id="start">
+    <h1>Spark Game</h1>
+    Enter your name: <input type="text" id="nameInputBox" />  
+    <div class="nav">
+      <div id="gravity"></div>
+      <div id="timer"></div>
+      <input type="button" class="btn btn-default" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
+    </div>
+  </div>
+  <div id="end">
+    <h2>You lose, <span id="endName"></span>!</h2>
+    <input type="button" class="btn btn-default" value="Retry" onClick="javascript:start();">
   </div>
   <canvas id=map height=600 width=800>This is where the canvas would be if your browser supported it.</canvas>
 
