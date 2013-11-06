@@ -23,6 +23,7 @@
   var speed = 20;
   var name = "";
   var interval;
+  var highScore = 0;
 
   // Array of decent looking color values
   colors[0] = "F00";
@@ -115,19 +116,31 @@
     interval = setInterval( drawMap, 10);
   }
 
-  function end()  {
+  function end()  {    
     clearInterval(interval);
-
+    var message = "";
+    var endScore = hero.x;
     var endName = document.getElementById('endName');
-    endName.innerHTML = name;
-
-    var endScore = document.getElementById('endScore');
-    endScore.innerHTML = hero.x;
-
-    var end = document.getElementById('end');
-    end.style.display = "block";
-
     var map = document.getElementById('map');
+    var end = document.getElementById('end');
+
+    if (highScore < endScore) {      
+      message = "<h2>Congratulations, " + name + "!</h2><p>You beat the Highscore of " + highScore + "!</p>";
+      highScore = endScore;
+    } else {
+      message = name + ", you're a loser! Try again?";
+    }
+
+    var messageElement = document.getElementById('message');
+    messageElement.innerHTML = message;
+
+    var endScoreElement = document.getElementById('endScore');
+    endScoreElement.innerHTML = endScore;
+
+    var highScoreElement = document.getElementById('highScore');    
+    highScoreElement.innerHTML = highScore;
+
+    end.style.display = "block";    
     map.style.display = "none";
 
   }
@@ -163,6 +176,12 @@
     context.font         = ' 12px sans-serif';
     context.textBaseline = 'top';
     context.fillText  (viewport.x + ", " + viewport.y, 0, 0);
+    var currentScoreElement = document.getElementById("currentScore");  
+    currentScoreElement.innerHTML = hero.x;
+    if (hero.x > highScore) {
+      var highScoreElement = document.getElementById("highScore");  
+      highScoreElement.innerHTML = hero.x;
+    }
   }
 
   // World class
@@ -194,8 +213,7 @@
     this.status = "alive"; 
 
     this.move = function() {
-      this.dy ;
-     
+      
       this.dy += 1;
   
       if(this.dy > 10) {
@@ -365,11 +383,27 @@
       padding-left: 150px;
       display: none;
     }
+    .navbar {
+      font-size: 25px;
+    }
+    .navbar-default
+    .navbar-text {
+      color: blue;
+    }
+    #highscore {
+      color: red;
+    }
   </style> 
   
 </head>
 <body onLoad="javascript:init()">
-  <div id="start">
+
+  <nav class="navbar navbar-default " role="navigation">
+    <p class="navbar-text"><strong>Spark Game</strong></p>    
+    <p class="navbar-text pull-right"><strong>High Score: </strong><span id="highScore">0</span></p>
+    <p class="navbar-text pull-right"><strong>Your Score: </strong><span id="currentScore">0</span></p>    
+  </nav>
+<div id="start">
     <h1>Spark Game</h1>
     Enter your name: <input type="text" id="nameInputBox" />  
     <div class="nav">
@@ -379,8 +413,8 @@
     </div>
   </div>
   <div id="end">
-    <h2>You lose, <span id="endName"></span>!</h2>
-    <h3 id="endScore"></h3>
+    <h2 id="message"></h2>
+    <h3>Your score was <span id="endScore"></span></h3>
     <input type="button" class="btn btn-default" value="Retry" onClick="javascript:start();">
   </div>
   <canvas id=map height=600 width=800>This is where the canvas would be if your browser supported it.</canvas>
