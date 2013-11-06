@@ -6,7 +6,7 @@
 
 
   // Some initial variables
-  var total = 500; // Total balls
+  var total = 250; // Total balls
   var i = 0;
   var balls   = new Array(); // array for all our circle objects
 
@@ -29,7 +29,7 @@
   colors[1] = "0F0";
   colors[2] = "00F";
   colors[3] = "F0F";
-  colors[4] = "FF0";
+  colors[4] = "8F0";
   colors[5] = "0FF";
   colors[6] = "F08";
   colors[7] = "F80";
@@ -39,7 +39,7 @@
   colors[12] = "0F8";
   colors[13] = "8F8";
   colors[14] = "8F0";
-  colors[15] = "FF8";
+  colors[15] = "F08";
   colors[16] = "F8F";
   colors[17] = "8FF";
   colors[18] = "289";
@@ -60,7 +60,7 @@
         }
       }
       if(event.keyCode == 38) {
-        hero.dy -= 35;
+        hero.dy -= 20;
       }
       else if(event.keyCode == 40) {   
         hero.y += speed;
@@ -79,9 +79,29 @@
 
     // Generates a bunch of new circle objects for our ball array 
     while (i < total) {
-      balls[i] = new  Circle( Math.ceil( Math.random()*(width) ), Math.ceil(Math.random()*height), (Math.ceil(Math.random()*rlimit) + 1));
+      balls[i] = new  Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), (Math.ceil(Math.random()*rlimit) + 5), 'badguy', 'asteroid');
       i++;  
     }
+
+    while (i < total + 5) {
+      balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
+      i++;  
+    }
+
+
+    /*
+    balls[0] = new Circle( 500, 450, 10);
+    balls[1] = new Circle( 550, 450, 20);
+    balls[2] = new Circle( 600, 450, 15);
+    balls[3] = new Circle( 650, 470, 12);
+    balls[4] = new Circle( 750, 360, 22);
+    balls[5] = new Circle( 850, 100, 20);
+    balls[6] = new Circle( 500, 300, 10);
+    balls[7] = new Circle( 600, 100, 30);
+    balls[8] = new Circle( 550, 700, 40);
+  
+    */
+       total = balls.length;
 
     hero.x = 0;
     hero.dx = 5;
@@ -181,6 +201,7 @@
     this.width = document.width;
     this.height = 500;
   }
+
   // hero Class 
   function Hero() {
     this.x = 200;
@@ -196,7 +217,7 @@
     this.move = function() {
       this.dy ;
      
-      this.dy += 1;
+      this.dy += 0.2;
   
       if(this.dy > 10) {
         this.dy = 10;
@@ -224,6 +245,19 @@
 
           endGame();
         } 
+      }
+      else if (this.status == "invincible") {
+        this.statusTimer += 1;
+        this.path = 'hero-invincible.png';
+
+        if (this.statusTimer > 500) {
+          this.statusTimer = 0;
+          this.status = "alive";
+          this.path = "hero.png";
+
+          this.status = 'alive';
+
+        } 
 
       }
     }
@@ -237,16 +271,20 @@
   }
 
       
-  // Circle Class
-  // Accepts x and y coordinates and a radius 
-  function Circle(x,y,r) {
+  // Entity Class
+  // Accepts x and y coordinates, radius, and a type
+  function Entity(x,y,r,type,name) {
     this.x = x;
     this.y = y;
     this.height = r;
     this.width = r;
-    this.dx = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
-    this.dy = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
+    //this.dx = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
+    //this.dy = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
+    this.dx = 0;
+    this.dy = 0;
     this.color = Math.ceil(Math.random()*colors.length);
+    this.type = type;
+    this.name = name;
 
     // Each circle object knows how to draw itself  
     this.draw = function() {
@@ -322,7 +360,14 @@
   function isColliding(a, b) {
    
     if ( (b.x >= a.x && b.x <= a.x + a.width) && (b.y >= a.y && b.y <= a.y + a.height)) { 
-      hero.status = "dead";
+      
+      if (b.type == 'badguy' && hero.status != 'invincible') {
+        hero.status = "dead";
+      }
+      else if (b.type == 'powerup') {
+        console.log("POWER UP");
+        hero.status = "invincible" 
+      }
       return true;
     }
     else {
