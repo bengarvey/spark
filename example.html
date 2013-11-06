@@ -288,11 +288,20 @@
 
     // Each circle object knows how to draw itself  
     this.draw = function() {
-      context.beginPath();
-      context.fillStyle = "#" + colors[this.color];
-        context.fillRect(this.x - viewport.x, this.y - viewport.y, this.width, this.height);
-      context.closePath();
-      context.fill();
+
+      if (this.name == 'asteroid') {
+        context.beginPath();
+        context.fillStyle = "#" + colors[this.color];
+          context.fillRect(this.x - viewport.x, this.y - viewport.y, this.width, this.height);
+        context.closePath();
+        context.fill();
+      }
+      else if (this.name == 'invincible') {
+        drawing = new Image() 
+        drawing.src = 'star.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+    
+      }
     }
 
     // If we want to change directions horizontally
