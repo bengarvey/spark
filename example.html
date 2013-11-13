@@ -136,7 +136,7 @@
     interval = setInterval( drawMap, 10);
   }
 
-  function end()  {    
+  function end()  {
     clearInterval(interval);
     var message = "";
     var endScore = hero.x;
@@ -291,6 +291,72 @@
     }
   }
 
+  function Sprite(x, y, width, height, imageUrl, spriteOptions) {
+    this.image = new Image();
+    this.isLoaded = false;
+    this.image.onLoad = function() {
+      this.isLoaded = true;
+    }
+    image.src = imageUrl;
+    this.dx = 0;
+    this.dy = 0;
+    this.spriteOptions = spriteOptions;
+
+    frames = 0;
+    tick = false;
+
+    this.move = function(minWidth, minHeight, maxWidth, maxHeight) {
+      this.x += this.dx;
+      this.y += this.dy;
+      if (this.x + this.width >= maxWidth) {
+        this.dx = this.dx * -1;
+        this.x = maxWidth - this.width;
+      }
+      if (this.x <= minWidth) {
+        this.dx = this.dx * -1;
+        this.x = minWidth;
+      }
+      if (this.y + this.height >= maxHeight) {
+        this.dy = this.dy * -1;
+        this.y = maxHeight - this.height;
+      }
+      if (this.y <= minHeight) {
+        this.dy = this.dy * -1;
+        return this.y = minHeight;
+      }
+    },
+    this.draw = function(context) {
+      var previousDirection, sprite;
+      if (this.isLoaded) {
+        return;
+      }
+      frames = frames + 1;
+      if (frames === 60) {
+        tick = !tick;
+        frames = 0;
+      }
+      if (this.dy === 0 && this.dx === 0) {
+        sprite = this.spriteOptions[previousDirection] || this.spriteOptions['down'];
+      }
+      if (this.dy > 0) {
+        sprite = this.spriteOptions.down.action[tick % 2];
+        previousDirection = 'down';
+      }
+      if (this.dy < 0) {
+        sprite = this.spriteOptions.up.action[tick % 2];
+        previousDirection = 'up';
+      }
+      if (this.dx > 0) {
+        sprite = this.spriteOptions.right.action[tick % 2];
+        previousDirection = 'right';
+      }
+      if (this.dx < 0) {
+        sprite = this.spriteOptions.left.action[tick % 2];
+        previousDirection = 'left';
+      }
+      return context.drawImage(this.image, sprite.x, sprite.y, this.height, this.width, this.x, this.y, this.width, this.height);
+    }
+  }
       
   // Entity Class
   // Accepts x and y coordinates, radius, and a type
