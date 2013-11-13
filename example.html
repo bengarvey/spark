@@ -23,6 +23,7 @@
   var speed = 20;
   var name = "";
   var interval;
+  var currentScore = 0;
   var highScore = 0;
 
   // Grabs colors from the colors.js file
@@ -69,15 +70,18 @@
       i++;  
     }
 
-    var hat = new Entity(100, 100, 100, 'clothing', 'hat')
+    var hat = new Entity(4000, 400, 70, 'clothing', 'hat');    
     balls.push(hat);
-    
+
+    var glove = new Entity(10000, 200, 70, 'clothing', 'glove')
+    balls.push(glove);    
+
     total = balls.length;
 
     hero.x = 0;
     hero.dx = 5;
     hero.y = 400;
-   
+    currentScore = 0;
   }
 
   // Initializes the canvas and starts the game loop
@@ -110,7 +114,7 @@
   function end()  {    
     clearInterval(interval);
     var message = "";
-    var endScore = hero.x;
+    var endScore = currentScore;
     var endName = document.getElementById('endName');
     var map = document.getElementById('map');
     var end = document.getElementById('end');
@@ -168,10 +172,10 @@
     context.textBaseline = 'top';
     context.fillText  (viewport.x + ", " + viewport.y, 0, 0);
     var currentScoreElement = document.getElementById("currentScore");  
-    currentScoreElement.innerHTML = hero.x;
-    if (hero.x > highScore) {
+    currentScoreElement.innerHTML = currentScore;
+    if (currentScore > highScore) {
       var highScoreElement = document.getElementById("highScore");  
-      highScoreElement.innerHTML = hero.x;
+      highScoreElement.innerHTML = currentScore;
     }
   }
 
@@ -215,6 +219,7 @@
  
       this.y += this.dy;
       this.x += this.dx;
+      currentScore += Math.ceil(this.dx);
       if(this.y > world.height - 100) {
         this.y = world.height - 100;
         
@@ -295,8 +300,11 @@
       } else if (this.name == 'hat') {
         drawing = new Image() 
         drawing.src = 'hat.png';
-        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
-    
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
+      } else if (this.name == 'glove') {
+        drawing = new Image() 
+        drawing.src = 'glove.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
       }
     }
 
@@ -372,6 +380,11 @@
       else if (b.type == 'powerup') {
         console.log("POWER UP");
         hero.status = "invincible" 
+      }
+      else if (b.type == 'clothing') {
+        currentScore += 500;
+        b.y = 10000;
+        hero.dx = hero.dx * 1.5; 
       }
       return true;
     }
