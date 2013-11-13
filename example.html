@@ -194,11 +194,17 @@
     this.y = 400;
     this.dx = 5;
     this.dy = 0;
-    this.height = 100;
+    this.height = 150;
     this.width = 50;
     this.statusTimer = 0;
     this.path = "hero.png";
-    this.status = "alive"; 
+    this.status = "alive";
+    this.loaded = false;
+    this.image = new Image();
+    this.image.onLoad = function() {
+      this.loaded = true;
+    }
+    this.image.src = "runningMan.png";
 
     this.move = function() {
 
@@ -211,8 +217,8 @@
  
       this.y += this.dy;
       this.x += this.dx;
-      if(this.y > world.height - 100) {
-        this.y = world.height - 100;
+      if(this.y > world.height - 150) {
+        this.y = world.height - 150;
         
       }
       if(this.y < 0) {
@@ -250,10 +256,24 @@
     }
 
  
+    var frames = 0;
+    var tick = false;
     this.draw = function() {
-      drawing = new Image() 
-      drawing.src = this.path
-      context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+      if (this.isLoaded) {
+        return;
+      }
+      frames = frames + 1;
+      if (frames === 60) {
+        tick = !tick;
+        frames = 0;
+      }
+
+      sprite = {
+        x: tick ? 0 : 50,
+        y: 0
+      }
+
+      return context.drawImage(this.image, sprite.x, sprite.y, this.width, this.height, this.x - viewport.x, this.y - viewport.y, this.width, this.height);
     }
   }
 
@@ -351,7 +371,7 @@
       }
       else if (this.name == 'invincible') {
         drawing = new Image() 
-        drawing.src = 'star.png';
+        drawing.src = 'hotdog.png';
         context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
     
       }
