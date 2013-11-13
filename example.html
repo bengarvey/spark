@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>Bounce - Canvas game loop skeleton</title>
-
+  <script type="text/javascript" src="js/colors.js"></script> 
   <script language="javascript">  
 
 
@@ -25,31 +25,10 @@
   var interval;
   var highScore = 0;
 
-  // Array of decent looking color values
-  colors[0] = "F00";
-  colors[1] = "0F0";
-  colors[2] = "00F";
-  colors[3] = "F0F";
-  colors[4] = "8F0";
-  colors[5] = "0FF";
-  colors[6] = "F08";
-  colors[7] = "F80";
-  colors[8] = "F88";
-  colors[9] = "08F";
-  colors[10] = "88F";
-  colors[12] = "0F8";
-  colors[13] = "8F8";
-  colors[14] = "8F0";
-  colors[15] = "F08";
-  colors[16] = "F8F";
-  colors[17] = "8FF";
-  colors[18] = "289";
-  colors[19] = "982";
-  colors[20] = "829";
-  colors[21] = "229";
-  colors[22] = "DDD";
-  colors[23] = "333";
+  // Grabs colors from the colors.js file
+  var colors = getColors();
 
+  // listen for keyboard events and take action
   document.addEventListener('keydown', function(event) {
       if(event.keyCode == 37) {
         hero.dx -= 1;
@@ -88,21 +67,8 @@
       balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
       i++;  
     }
-
-
-    /*
-    balls[0] = new Circle( 500, 450, 10);
-    balls[1] = new Circle( 550, 450, 20);
-    balls[2] = new Circle( 600, 450, 15);
-    balls[3] = new Circle( 650, 470, 12);
-    balls[4] = new Circle( 750, 360, 22);
-    balls[5] = new Circle( 850, 100, 20);
-    balls[6] = new Circle( 500, 300, 10);
-    balls[7] = new Circle( 600, 100, 30);
-    balls[8] = new Circle( 550, 700, 40);
-  
-    */
-       total = balls.length;
+    
+    total = balls.length;
 
     hero.x = 0;
     hero.dx = 5;
@@ -136,6 +102,7 @@
     interval = setInterval( drawMap, 10);
   }
 
+  // We call this when the game ends
   function end()  {
     clearInterval(interval);
     var message = "";
@@ -235,11 +202,9 @@
 
     this.move = function() {
 
-      this.dy ;
-     
+      this.dy;
       this.dy += 0.2;
 
-  
       if(this.dy > 10) {
         this.dy = 10;
       }
@@ -264,7 +229,8 @@
           this.status = "alive";
           this.path = "hero.png";
 
-          endGame();
+          // Game over!
+          end();
         } 
       }
       else if (this.status == "invincible") {
@@ -470,13 +436,6 @@
       return false;
     }
     
-  }
-
-  function endGame() {
-    end();
-    //alert("Game Over");
-    //alert("Score:  " + hero.x);
-    //init();
   }
 
   </script>
