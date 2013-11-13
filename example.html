@@ -67,6 +67,9 @@
       balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
       i++;  
     }
+
+    var hat = new Entity(100, 100, 100, 'clothing', 'hat')
+    balls.push(hat);
     
     total = balls.length;
 
@@ -288,6 +291,11 @@
         drawing.src = 'star.png';
         context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
     
+      } else if (this.name == 'hat') {
+        drawing = new Image() 
+        drawing.src = 'hat.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+    
       }
     }
 
@@ -433,7 +441,7 @@
     <h3>Your score was <span id="endScore"></span></h3>
     <input type="button" class="btn btn-default" value="Retry" onClick="javascript:start();">
   </div>
-  <canvas id=map height=600 width=800>This is where the canvas would be if your browser supported it.</canvas>
+  <canvas id="map" height="600" width="800">This is where the canvas would be if your browser supported it.</canvas>
 
 </body>
 </html>
