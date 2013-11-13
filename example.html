@@ -54,6 +54,7 @@
   // Resets our canvas height when we load the page or in case we resize  
   function init() {
     canvas = document.getElementById("map");
+    viewport.width = document.body.clientWidth;
     canvas.height = viewport.height;
     canvas.width = viewport.width;
 
