@@ -72,7 +72,7 @@
 
     hero.x = 0;
     hero.dx = 5;
-    hero.y = 400;
+    hero.y = 300;
    
   }
 
@@ -194,11 +194,17 @@
     this.y = 400;
     this.dx = 5;
     this.dy = 0;
-    this.height = 100;
-    this.width = 50;
+    this.height = 200;
+    this.width = 200;
     this.statusTimer = 0;
     this.path = "hero.png";
-    this.status = "alive"; 
+    this.status = "alive";
+    this.loaded = false;
+    this.image = new Image();
+    this.image.onLoad = function() {
+      this.loaded = true;
+    }
+    this.image.src = "runningMan.png";
 
     this.move = function() {
 
@@ -211,8 +217,8 @@
  
       this.y += this.dy;
       this.x += this.dx;
-      if(this.y > world.height - 100) {
-        this.y = world.height - 100;
+      if(this.y > world.height - 200) {
+        this.y = world.height - 200;
         
       }
       if(this.y < 0) {
@@ -250,10 +256,48 @@
     }
 
  
-    this.draw = function() {
+    /*this.draw = function() {
       drawing = new Image() 
       drawing.src = this.path
       context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+    }*/
+    var frames = 0;
+    var tick = false;
+    this.draw = function() {
+      if (this.isLoaded) {
+        return;
+      }
+      frames = frames + 1;
+      if (frames === 60) {
+        tick = !tick;
+        frames = 0;
+      }
+
+      sprite = {
+        x: tick ? 0 : 200,
+        y: 0
+      }
+
+      /*if (this.dy === 0 && this.dx === 0) {
+        sprite = this.spriteOptions[previousDirection] || this.spriteOptions['down'];
+      }
+      if (this.dy > 0) {
+        sprite = this.spriteOptions.down.action[tick % 2];
+        previousDirection = 'down';
+      }
+      if (this.dy < 0) {
+        sprite = this.spriteOptions.up.action[tick % 2];
+        previousDirection = 'up';
+      }
+      if (this.dx > 0) {
+        sprite = this.spriteOptions.right.action[tick % 2];
+        previousDirection = 'right';
+      }
+      if (this.dx < 0) {
+        sprite = this.spriteOptions.left.action[tick % 2];
+        previousDirection = 'left';
+      }*/
+      return context.drawImage(this.image, sprite.x, sprite.y, this.height, this.width, this.x - viewport.x, this.y - viewport.y, this.width, this.height);
     }
   }
 
