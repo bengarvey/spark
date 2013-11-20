@@ -264,7 +264,7 @@
       }  
 
       if (this.status == "dead") {
-        this.image.src = 'RunningMan-dead.png';
+        this.image.src = 'runningMan-dead.png';
         this.statusTimer += 1;
         
         if (this.statusTimer > 100) {
@@ -300,10 +300,11 @@
         return;
       }
       frames = frames + 1;
-      framesToAnimateAt = 20 + -2 * this.dx;
+      framesToAnimateAt = 60 + -3 * this.dx;
+      console.log(frames);
       if (framesToAnimateAt < 0)
-        framesToAnimateAt = 2
-      if (frames === framesToAnimateAt) {
+        framesToAnimateAt = 2;
+      if (frames >= framesToAnimateAt) {
         tick = !tick;
         frames = 0;
       }
