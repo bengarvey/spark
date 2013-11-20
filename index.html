@@ -14,6 +14,10 @@
   var world = new World();
   var hero = new Hero();
 
+  var sun = new Background();
+  sun.path = 'img/sun.png';
+  sun.x = 0;
+  sun.y = 0; 
   var height  = world.height;
   var width   = world.width;
   var hmin  = window.innerHeight * 0;
@@ -151,6 +155,7 @@
     // Erases everything on the canvas
     clearCanvas();
 
+    sun.draw();
     // Loop through all circle objects
     for (i=0; i<total; i++) {   
       
@@ -163,6 +168,7 @@
     
     hero.move();
     hero.draw();
+
     
     // Move the viewport to follow the hero
     viewport.x = hero.x - 100;    
@@ -194,6 +200,20 @@
     this.y = 0;
     this.width = document.width;
     this.height = 500;
+  }
+
+  // background Class
+  function Background() {
+    this.x = 0;
+    this.y = 475;
+    this.path = "img/floor.png";
+
+    this.draw = function() {
+      drawing = new Image() 
+      drawing.src = this.path
+      context.drawImage(drawing,this.x, this.y); 
+    }
+  
   }
 
   // hero Class 
@@ -305,8 +325,13 @@
         drawing = new Image() 
         drawing.src = 'glove.png';
         context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
+      } 
+      else if (this.name == 'mountain') {
+        drawing = new Image(); 
+        drawing.src = 'img/mountain.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
       }
-    }
+    }   
 
     // If we want to change directions horizontally
     this.bounceX = function() {
