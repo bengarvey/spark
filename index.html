@@ -155,6 +155,8 @@
     // Erases everything on the canvas
     clearCanvas();
 
+    currentScore += 1;
+
     sun.draw();
     // Loop through all circle objects
     for (i=0; i<total; i++) {   
@@ -254,7 +256,7 @@
       }  
 
       if (this.status == "dead") {
-        this.path = 'hero-dead.png';
+        this.path = 'deadRunningMan.png';
         this.statusTimer += 1;
         
         if (this.statusTimer > 100) {
@@ -290,7 +292,7 @@
         return;
       }
       frames = frames + 1;
-      framesToAnimateAt = 60 + -2 * this.dx;
+      framesToAnimateAt = 20 + -2 * this.dx;
       if (framesToAnimateAt < 0)
         framesToAnimateAt = 2
       if (frames === framesToAnimateAt) {
@@ -458,6 +460,7 @@
     this.move = function() {  
       this.x += this.dx;
       this.y += this.dy;
+
 
       if(this.x >= width ) {
         this.dx = this.dx*-1;
