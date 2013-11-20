@@ -1,0 +1,461 @@
+<html>
+<head>
+  <title>Bounce - Canvas game loop skeleton</title>
+  <script type="text/javascript" src="js/colors.js"></script> 
+  <script language="javascript">  
+
+
+  // Some initial variables
+  var total = 250; // Total balls
+  var i = 0;
+  var balls   = new Array(); // array for all our circle objects
+
+  var viewport = new Viewport();
+  var world = new World();
+  var hero = new Hero();
+
+  var height  = world.height;
+  var width   = world.width;
+  var hmin  = window.innerHeight * 0;
+  var wmin  = window.innerWidth * 0;
+  var rlimit  = 40; // max ball size
+  var colors  = new Array();
+  var speed = 20;
+  var name = "";
+  var interval;
+  var currentScore = 0;
+  var highScore = 0;
+
+  // Grabs colors from the colors.js file
+  var colors = getColors();
+
+  // listen for keyboard events and take action
+  document.addEventListener('keydown', function(event) {
+      if(event.keyCode == 37) {
+        hero.dx -= 1;
+      }
+      else if(event.keyCode == 39) {
+        hero.dx += 1;
+        if(hero.x > world.width- viewport.width) {
+          hero.x = world.width- viewport.width;
+        }
+      }
+      if(event.keyCode == 38) {
+        hero.dy -= 20;
+      }
+      else if(event.keyCode == 40) {   
+        hero.y += speed;
+        if(hero.y > world.height- 100) {
+          hero.y = world.height- 100;
+      }
+      }    
+  });
+
+
+  // Resets our canvas height when we load the page or in case we resize  
+  function init() {
+    canvas = document.getElementById("map");
+    viewport.width = document.body.clientWidth;
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Generates a bunch of new circle objects for our ball array 
+    while (i < total) {
+      balls[i] = new  Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), (Math.ceil(Math.random()*rlimit) + 5), 'badguy', 'asteroid');
+      i++;  
+    }
+
+    while (i < total + 5) {
+      balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
+      i++;  
+    }
+
+    var hat = new Entity(4000, 400, 70, 'clothing', 'hat');    
+    balls.push(hat);
+
+    var glove = new Entity(10000, 200, 70, 'clothing', 'glove')
+    balls.push(glove);    
+
+    total = balls.length;
+
+    hero.x = 0;
+    hero.dx = 5;
+    hero.y = 400;
+    currentScore = 0;
+  }
+
+  // Initializes the canvas and starts the game loop
+  function start()  {
+  
+    init();
+
+    name = document.getElementById('nameInputBox').value;
+
+    var startBox = document.getElementById('start');
+    startBox.style.display = "none";
+
+    var end = document.getElementById('end');
+    end.style.display = "none";
+
+    var map = document.getElementById('map');
+    map.style.display = "block";
+
+    // Get the canvas element we need
+    drawing_canvas = document.getElementById('map');
+
+    // Initaliase a global 2-dimensional drawing context
+    context = drawing_canvas.getContext('2d');
+
+    // this starts the game loop
+    interval = setInterval( drawMap, 10);
+  }
+
+  // We call this when the game ends
+  function end()  {    
+    clearInterval(interval);
+    var message = "";
+    var endScore = currentScore;
+    var endName = document.getElementById('endName');
+    var map = document.getElementById('map');
+    var end = document.getElementById('end');
+
+    if (highScore < endScore) {      
+      message = "<h2>Congratulations, " + name + "!</h2><p>You beat the Highscore of " + highScore + "!</p>";
+      highScore = endScore;
+    } else {
+      message = name + ", you're a loser! Try again?";
+    }
+
+    var messageElement = document.getElementById('message');
+    messageElement.innerHTML = message;
+
+    var endScoreElement = document.getElementById('endScore');
+    endScoreElement.innerHTML = endScore;
+
+    var highScoreElement = document.getElementById('highScore');    
+    highScoreElement.innerHTML = highScore;
+
+    end.style.display = "block";    
+    map.style.display = "none";
+
+  }
+
+  // Clears the canvas linked to the global context 
+  function clearCanvas() {
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, width, height);
+  }
+  // This is our main game loop 
+  function drawMap() {
+
+    // Erases everything on the canvas
+    clearCanvas();
+
+    // Loop through all circle objects
+    for (i=0; i<total; i++) {   
+      
+      isColliding(hero, balls[i]);
+ 
+      // The circle objects know how to update their position and draw themselves on the canvas
+      balls[i].move();
+      balls[i].draw();
+    }
+    
+    hero.move();
+    hero.draw();
+    
+    // Move the viewport to follow the hero
+    viewport.x = hero.x - 100;    
+
+    context.fillStyle    = '#000';
+    context.font         = ' 12px sans-serif';
+    context.textBaseline = 'top';
+    context.fillText  (viewport.x + ", " + viewport.y, 0, 0);
+    var currentScoreElement = document.getElementById("currentScore");  
+    currentScoreElement.innerHTML = currentScore;
+    if (currentScore > highScore) {
+      var highScoreElement = document.getElementById("highScore");  
+      highScoreElement.innerHTML = currentScore;
+    }
+  }
+
+  // World class
+  function World() {
+    this.x = 0;
+    this.y = 0;
+    this.width = 100000;
+    this.height = 500;
+    this.entities = new Array();
+  }
+
+  // Viewport Class 
+  function Viewport() {
+    this.x = 0;
+    this.y = 0;
+    this.width = document.width;
+    this.height = 500;
+  }
+
+  // hero Class 
+  function Hero() {
+    this.x = 200;
+    this.y = 400;
+    this.dx = 5;
+    this.dy = 0;
+    this.height = 100;
+    this.width = 50;
+    this.statusTimer = 0;
+    this.path = "hero.png";
+    this.status = "alive"; 
+
+    this.move = function() {
+
+      this.dy;
+      this.dy += 0.2;
+
+      if(this.dy > 10) {
+        this.dy = 10;
+      }
+ 
+      this.y += this.dy;
+      this.x += this.dx;
+      currentScore += Math.ceil(this.dx);
+      if(this.y > world.height - 100) {
+        this.y = world.height - 100;
+        
+      }
+      if(this.y < 0) {
+        this.y = 0;
+        this.dy = 10;
+      }  
+
+      if (this.status == "dead") {
+        this.path = 'hero-dead.png';
+        this.statusTimer += 1;
+        
+        if (this.statusTimer > 100) {
+          this.statusTimer = 0;
+          this.status = "alive";
+          this.path = "hero.png";
+
+          // Game over!
+          end();
+        } 
+      }
+      else if (this.status == "invincible") {
+        this.statusTimer += 1;
+        this.path = 'hero-invincible.png';
+
+        if (this.statusTimer > 500) {
+          this.statusTimer = 0;
+          this.status = "alive";
+          this.path = "hero.png";
+
+          this.status = 'alive';
+
+        } 
+
+      }
+    }
+
+ 
+    this.draw = function() {
+      drawing = new Image() 
+      drawing.src = this.path
+      context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+    }
+  }
+
+      
+  // Entity Class
+  // Accepts x and y coordinates, radius, and a type
+  function Entity(x,y,r,type,name) {
+    this.x = x;
+    this.y = y;
+    this.height = r;
+    this.width = r;
+    //this.dx = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
+    //this.dy = Math.ceil(Math.random()*2 - Math.ceil(Math.random()*2));
+    this.dx = 0;
+    this.dy = 0;
+    this.color = Math.ceil(Math.random()*colors.length);
+    this.type = type;
+    this.name = name;
+
+    // Each circle object knows how to draw itself  
+    this.draw = function() {
+
+      if (this.name == 'asteroid') {
+        context.beginPath();
+        context.fillStyle = "#" + colors[this.color];
+          context.fillRect(this.x - viewport.x, this.y - viewport.y, this.width, this.height);
+        context.closePath();
+        context.fill();
+      }
+      else if (this.name == 'invincible') {
+        drawing = new Image() 
+        drawing.src = 'star.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+    
+      } else if (this.name == 'hat') {
+        drawing = new Image() 
+        drawing.src = 'hat.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
+      } else if (this.name == 'glove') {
+        drawing = new Image() 
+        drawing.src = 'glove.png';
+        context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y, this.width, this.height); 
+      }
+    }
+
+    // If we want to change directions horizontally
+    this.bounceX = function() {
+      this.dx = this.dx*-1;
+    }
+    
+    this.bounceY = function() {
+      this.dy = this.dy*-1;
+    }
+    
+    this.getX = function() {
+      return this.x;
+    }
+    
+    this.getY = function() {
+      return this.y;
+    }
+
+    this.getdX = function() {
+      return this.dx;
+    }
+    
+    this.getdY = function() {
+      return this.dy;
+    }
+
+    this.setdX = function(dx) {
+      this.dx = dx;
+    }
+    
+    this.setdY = function(dy) {
+      this.dy = dy;
+    }
+
+  
+    // Moves the object by applying it's velocity to the current position 
+    this.move = function() {  
+      this.x += this.dx;
+      this.y += this.dy;
+
+      if(this.x >= width ) {
+        this.dx = this.dx*-1;
+        this.x = width;
+      }
+      
+      if(this.x <= wmin) {
+        this.dx = this.dx*-1;
+        this.x = wmin;
+      }
+
+      if(this.y >= height) {
+        this.dy = this.dy*-1;
+        this.y = height;
+      }
+      
+      if(this.y <= hmin) {
+        this.dy = this.dy*-1;
+        this.y = hmin;
+      }
+    }
+  }
+
+  // Checks to see if these two objects are colliding based on their x, y and height, width
+  function isColliding(a, b) {
+   
+    if ( (b.x >= a.x && b.x <= a.x + a.width) && (b.y >= a.y && b.y <= a.y + a.height)) { 
+      
+      if (b.type == 'badguy' && hero.status != 'invincible') {
+        hero.status = "dead";
+      }
+      else if (b.type == 'powerup') {
+        console.log("POWER UP");
+        hero.status = "invincible" 
+      }
+      else if (b.type == 'clothing') {
+        currentScore += 500;
+        b.y = 10000;
+        hero.dx = hero.dx * 1.5; 
+      }
+      return true;
+    }
+    else {
+      return false;
+    }
+    
+  }
+
+  </script>
+  <link href="css/bootstrap.min.css" rel="stylesheet" />   
+  <style>
+    body {
+     background-color: #074CE0;
+     color: white;
+    }
+    .nav {
+      padding: 10px 0px;
+    }
+    #start {
+      background: url('img/stickman.png') no-repeat;
+      background-size: 100px;
+      padding-left: 150px;
+      height: 200px;
+      position: absolute;      
+      left: 35%;
+      top: 35%;  
+    }
+    #end {
+      position: absolute;
+      left: 35%;
+      top: 35%; 
+      height: 200px;
+      padding-left: 150px;
+      display: none;
+    }
+    .navbar {
+      font-size: 25px;
+    }
+    .navbar-default
+    .navbar-text {
+      color: blue;
+    }
+    #highscore {
+      color: red;
+    }
+  </style> 
+  
+</head>
+<body onLoad="javascript:init()">
+
+  <nav class="navbar navbar-default " role="navigation">
+    <p class="navbar-text"><strong>Spark Game</strong></p>    
+    <p class="navbar-text pull-right"><strong>High Score: </strong><span id="highScore">0</span></p>
+    <p class="navbar-text pull-right"><strong>Your Score: </strong><span id="currentScore">0</span></p>    
+  </nav>
+<div id="start">
+    <h1>Spark Game</h1>
+    Enter your name: <input type="text" id="nameInputBox" />  
+    <div class="nav">
+      <div id="gravity"></div>
+      <div id="timer"></div>
+      <input type="button" class="btn btn-default" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
+    </div>
+  </div>
+  <div id="end">
+    <h2 id="message"></h2>
+    <h3>Your score was <span id="endScore"></span></h3>
+    <input type="button" class="btn btn-default" value="Retry" onClick="javascript:start();">
+  </div>
+  <canvas id="map" height="600" width="800">This is where the canvas would be if your browser supported it.</canvas>
+
+</body>
+</html>
