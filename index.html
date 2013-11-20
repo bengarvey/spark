@@ -31,18 +31,22 @@
 
   // listen for keyboard events and take action
   document.addEventListener('keydown', function(event) {
+      // Left arrow pushed
       if(event.keyCode == 37) {
         hero.dx -= 1;
       }
+      // Right arrow pressed
       else if(event.keyCode == 39) {
         hero.dx += 1;
         if(hero.x > world.width- viewport.width) {
           hero.x = world.width- viewport.width;
         }
       }
+      // Up arrow pressed
       if(event.keyCode == 38) {
         hero.dy -= 20;
       }
+      // Down arrow pressed
       else if(event.keyCode == 40) {   
         hero.y += speed;
         if(hero.y > world.height- 100) {
@@ -152,7 +156,7 @@
     clearCanvas();
 
     // Loop through all circle objects
-    for (i=0; i<total; i++) {   
+    for (i=0; i < balls.length; i++) {   
       
       isColliding(hero, balls[i]);
  
@@ -215,6 +219,10 @@
 
       if(this.dy > 10) {
         this.dy = 10;
+      }
+
+      if(this.dx > 13) {
+        this.dx = 13
       }
  
       this.y += this.dy;
@@ -371,7 +379,7 @@
 
   // Checks to see if these two objects are colliding based on their x, y and height, width
   function isColliding(a, b) {
-   
+
     if ( (b.x >= a.x && b.x <= a.x + a.width) && (b.y >= a.y && b.y <= a.y + a.height)) { 
       
       if (b.type == 'badguy' && hero.status != 'invincible') {
@@ -383,8 +391,13 @@
       }
       else if (b.type == 'clothing') {
         currentScore += 500;
-        b.y = 10000;
+        console.log(b.type, b.name);
+        for (var i = 0; i < balls.length; i++) {
+          if (balls[i].name == b.name)
+            balls.splice(i, 1);      
+        }
         hero.dx = hero.dx * 1.5; 
+      
       }
       return true;
     }
