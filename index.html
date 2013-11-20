@@ -115,7 +115,7 @@
   }
 
   // We call this when the game ends
-  function end()  {    
+  function end()  {
     clearInterval(interval);
     var message = "";
     var endScore = currentScore;
@@ -222,11 +222,17 @@
     this.y = 400;
     this.dx = 5;
     this.dy = 0;
-    this.height = 100;
+    this.height = 150;
     this.width = 50;
     this.statusTimer = 0;
     this.path = "hero.png";
-    this.status = "alive"; 
+    this.status = "alive";
+    this.loaded = false;
+    this.image = new Image();
+    this.image.onLoad = function() {
+      this.loaded = true;
+    }
+    this.image.src = "runningMan.png";
 
     this.move = function() {
 
@@ -239,10 +245,8 @@
  
       this.y += this.dy;
       this.x += this.dx;
-      currentScore += Math.ceil(this.dx);
-      if(this.y > world.height - 100) {
-        this.y = world.height - 100;
-        
+      if(this.y > world.height - 150) {
+        this.y = world.height - 150;
       }
       if(this.y < 0) {
         this.y = 0;
@@ -279,13 +283,96 @@
     }
 
  
+    var frames = 0;
+    var tick = false;
     this.draw = function() {
-      drawing = new Image() 
-      drawing.src = this.path
-      context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
+      if (this.isLoaded) {
+        return;
+      }
+      frames = frames + 1;
+      framesToAnimateAt = 60 + -2 * this.dx;
+      if (framesToAnimateAt < 0)
+        framesToAnimateAt = 2
+      if (frames === framesToAnimateAt) {
+        tick = !tick;
+        frames = 0;
+      }
+
+      sprite = {
+        x: tick ? 0 : 50,
+        y: 0
+      }
+
+      return context.drawImage(this.image, sprite.x, sprite.y, this.width, this.height, this.x - viewport.x, this.y - viewport.y, this.width, this.height);
     }
   }
 
+  function Sprite(x, y, width, height, imageUrl, spriteOptions) {
+    this.image = new Image();
+    this.isLoaded = false;
+    this.image.onLoad = function() {
+      this.isLoaded = true;
+    }
+    image.src = imageUrl;
+    this.dx = 0;
+    this.dy = 0;
+    this.spriteOptions = spriteOptions;
+
+    frames = 0;
+    tick = false;
+
+    this.move = function(minWidth, minHeight, maxWidth, maxHeight) {
+      this.x += this.dx;
+      this.y += this.dy;
+      if (this.x + this.width >= maxWidth) {
+        this.dx = this.dx * -1;
+        this.x = maxWidth - this.width;
+      }
+      if (this.x <= minWidth) {
+        this.dx = this.dx * -1;
+        this.x = minWidth;
+      }
+      if (this.y + this.height >= maxHeight) {
+        this.dy = this.dy * -1;
+        this.y = maxHeight - this.height;
+      }
+      if (this.y <= minHeight) {
+        this.dy = this.dy * -1;
+        return this.y = minHeight;
+      }
+    },
+    this.draw = function(context) {
+      var previousDirection, sprite;
+      if (this.isLoaded) {
+        return;
+      }
+      frames = frames + 1;
+      if (frames === 60) {
+        tick = !tick;
+        frames = 0;
+      }
+      if (this.dy === 0 && this.dx === 0) {
+        sprite = this.spriteOptions[previousDirection] || this.spriteOptions['down'];
+      }
+      if (this.dy > 0) {
+        sprite = this.spriteOptions.down.action[tick % 2];
+        previousDirection = 'down';
+      }
+      if (this.dy < 0) {
+        sprite = this.spriteOptions.up.action[tick % 2];
+        previousDirection = 'up';
+      }
+      if (this.dx > 0) {
+        sprite = this.spriteOptions.right.action[tick % 2];
+        previousDirection = 'right';
+      }
+      if (this.dx < 0) {
+        sprite = this.spriteOptions.left.action[tick % 2];
+        previousDirection = 'left';
+      }
+      return context.drawImage(this.image, sprite.x, sprite.y, this.height, this.width, this.x, this.y, this.width, this.height);
+    }
+  }
       
   // Entity Class
   // Accepts x and y coordinates, radius, and a type
@@ -314,7 +401,7 @@
       }
       else if (this.name == 'invincible') {
         drawing = new Image() 
-        drawing.src = 'star.png';
+        drawing.src = 'hotdog.png';
         context.drawImage(drawing,this.x - viewport.x, this.y - viewport.y); 
     
       } else if (this.name == 'hat') {
