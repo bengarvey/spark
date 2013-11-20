@@ -256,13 +256,13 @@
       }  
 
       if (this.status == "dead") {
-        this.path = 'deadRunningMan.png';
+        this.image.src = 'deadRunningMan.png';
         this.statusTimer += 1;
         
         if (this.statusTimer > 100) {
           this.statusTimer = 0;
           this.status = "alive";
-          this.path = "hero.png";
+          this.image.src = "runningMan.png";
 
           // Game over!
           end();
