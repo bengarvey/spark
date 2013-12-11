@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Bounce - Canvas game loop skeleton</title>
+  <title>MJ Run</title>
   <script type="text/javascript" src="js/colors.js"></script> 
   <script language="javascript">  
 
@@ -508,7 +508,6 @@
       }
       else if (b.type == 'clothing') {
         currentScore += 500;
-        console.log(b.type, b.name);
         for (var i = 0; i < balls.length; i++) {
           if (balls[i].name == b.name)
             balls.splice(i, 1);      
@@ -567,17 +566,26 @@
 <body onLoad="javascript:init()">
 
   <nav class="navbar navbar-default " role="navigation">
-    <p class="navbar-text"><strong>Spark Game</strong></p>    
+    <p class="navbar-text"><strong>MJ Run</strong></p>    
     <p class="navbar-text pull-right"><strong>High Score: </strong><span id="highScore">0</span></p>
     <p class="navbar-text pull-right"><strong>Your Score: </strong><span id="currentScore">0</span></p>    
   </nav>
 <div id="start">
-    <h1>Spark Game</h1>
+    <h1>MJ Run</h1>
     Enter your name: <input type="text" id="nameInputBox" />  
     <div class="nav">
       <div id="gravity"></div>
       <div id="timer"></div>
       <input type="button" class="btn btn-default" value="Start!" id=sparkButton name=sparkButton onClick="javascript:start();">
+    </div>
+    <div>
+      Game by:
+      <ul class="unstyled">
+        <li>LaqQuill - Code</li>
+        <li>Quadier - Art</li>
+        <li>Ayatullah - Code</li>
+        <li>Dana - Video</li>
+      </ul>        
     </div>
   </div>
   <div id="end">
