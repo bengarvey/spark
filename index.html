@@ -74,8 +74,8 @@
       i++;  
     }
 
-    while (i < total + 50) {
-      balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
+    while (i < total + 10) {
+      balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 50 , 'powerup', 'invincible');
       i++;  
     }
 
@@ -284,7 +284,7 @@
         if (this.statusTimer > 500) {
           this.statusTimer = 0;
           this.status = "alive";
-          this.image.src = "hero.png";
+          this.image.src = "runningMan.png";
 
           this.status = 'alive';
 
