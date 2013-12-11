@@ -74,7 +74,7 @@
       i++;  
     }
 
-    while (i < total + 5) {
+    while (i < total + 50) {
       balls[i] = new Entity( Math.ceil( Math.random()*(width - 500) + 500 ), Math.ceil(Math.random()*height), 100 , 'powerup', 'invincible');
       i++;  
     }
@@ -279,12 +279,12 @@
       }
       else if (this.status == "invincible") {
         this.statusTimer += 1;
-        this.path = 'hero-invincible.png';
+        this.image.src = 'runningMan-invincible.png';
 
         if (this.statusTimer > 500) {
           this.statusTimer = 0;
           this.status = "alive";
-          this.path = "hero.png";
+          this.image.src = "hero.png";
 
           this.status = 'alive';
 
@@ -302,7 +302,7 @@
       }
       frames = frames + 1;
       framesToAnimateAt = 60 + -3 * this.dx;
-      console.log(frames);
+
       if (framesToAnimateAt < 0)
         framesToAnimateAt = 2;
       if (frames >= framesToAnimateAt) {
