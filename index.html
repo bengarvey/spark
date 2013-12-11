@@ -302,7 +302,6 @@
       }
       frames = frames + 1;
       framesToAnimateAt = 60 + -3 * this.dx;
-      console.log(frames);
       if (framesToAnimateAt < 0)
         framesToAnimateAt = 2;
       if (frames >= framesToAnimateAt) {
@@ -503,7 +502,6 @@
         hero.status = "dead";
       }
       else if (b.type == 'powerup') {
-        console.log("POWER UP");
         hero.status = "invincible" 
       }
       else if (b.type == 'clothing') {
